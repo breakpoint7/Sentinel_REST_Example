@@ -1,0 +1,34 @@
+{
+  "displayName": "TEST_RULE_Malicious_File_Hash_Detection",
+  "isEnabled": true,
+  "queryCondition": {
+    "queryText": "DeviceFileEvents\n| where Timestamp > ago(1h)\n| where SHA1 in (\"aad4349a40f2b8b09f5da9e8a0f3e3e7e7d9c5f4\", \n                  \"b1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0\")\n| project Timestamp, DeviceName, FileName, FolderPath, SHA1, InitiatingProcessFileName, DeviceId, ReportId"
+  },
+  "schedule": {
+    "period": "1H"
+  },
+  "detectionAction": {
+    "alertTemplate": {
+      "title": "Known Malicious File Detected",
+      "description": "A file with a known malicious hash was detected on the device. This file \nshould be immediately quarantined and the device should be investigated \nfor potential compromise.",
+      "severity": "high",
+      "category": "Malware",
+      "mitreTechniques": [
+        "T1105"
+      ],
+      "impactedAssets": [
+        {
+          "@odata.type": "#microsoft.graph.security.impactedDeviceAsset",
+          "identifier": "deviceId"
+        }
+      ]
+    },
+    "responseActions": [
+      {
+        "@odata.type": "#microsoft.graph.security.isolateDeviceResponseAction",
+        "identifier": "deviceId",
+        "isolationType": "full"
+      }
+    ]
+  }
+}

@@ -1,0 +1,35 @@
+{
+  "displayName": "TEST_RULE_Suspicious_Network_Connection",
+  "isEnabled": true,
+  "queryCondition": {
+    "queryText": "DeviceNetworkEvents\n| where Timestamp > ago(1h)\n| where RemoteIPType == \"Public\"\n| where RemotePort in (4444, 5555, 8080, 9999)\n| where InitiatingProcessFileName in (\"cmd.exe\", \"powershell.exe\", \"certutil.exe\")\n| project Timestamp, DeviceName, RemoteIP, RemotePort, InitiatingProcessFileName, LocalIP, DeviceId, ReportId"
+  },
+  "schedule": {
+    "period": "1H"
+  },
+  "detectionAction": {
+    "alertTemplate": {
+      "title": "Suspicious Network Connection from System Process",
+      "description": "A system process initiated a network connection to a public IP address on \ncommonly abused ports. This may indicate command and control communication \nor data exfiltration attempts.",
+      "severity": "medium",
+      "category": "CommandAndControl",
+      "mitreTechniques": [
+        "T1071.001",
+        "T1105"
+      ],
+      "impactedAssets": [
+        {
+          "@odata.type": "#microsoft.graph.security.impactedDeviceAsset",
+          "identifier": "deviceId"
+        }
+      ]
+    },
+    "responseActions": [
+      {
+        "@odata.type": "#microsoft.graph.security.isolateDeviceResponseAction",
+        "identifier": "deviceId",
+        "isolationType": "selective"
+      }
+    ]
+  }
+}

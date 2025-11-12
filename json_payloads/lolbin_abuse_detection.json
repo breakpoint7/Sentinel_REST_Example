@@ -1,0 +1,36 @@
+{
+  "displayName": "TEST_RULE_LOLBin_Abuse_Detection",
+  "isEnabled": true,
+  "queryCondition": {
+    "queryText": "DeviceProcessEvents\n| where Timestamp > ago(1h)\n| where FileName in (\"certutil.exe\", \"bitsadmin.exe\", \"wmic.exe\", \"regsvr32.exe\")\n| where ProcessCommandLine contains \"http\" \n   or ProcessCommandLine contains \"ftp\"\n   or ProcessCommandLine contains \"download\"\n   or ProcessCommandLine contains \"-decode\"\n   or ProcessCommandLine contains \"scrobj.dll\"\n| project Timestamp, DeviceName, FileName, ProcessCommandLine, InitiatingProcessFileName, DeviceId, ReportId"
+  },
+  "schedule": {
+    "period": "1H"
+  },
+  "detectionAction": {
+    "alertTemplate": {
+      "title": "Living-off-the-Land Binary Abuse Detected",
+      "description": "Abuse of legitimate Windows binaries for malicious purposes was detected. \nThese \"living-off-the-land\" techniques are commonly used by attackers to \nblend in with normal system activity while performing malicious actions.",
+      "severity": "medium",
+      "category": "DefenseEvasion",
+      "mitreTechniques": [
+        "T1218.004",
+        "T1218.007",
+        "T1218.010"
+      ],
+      "impactedAssets": [
+        {
+          "@odata.type": "#microsoft.graph.security.impactedDeviceAsset",
+          "identifier": "deviceId"
+        }
+      ]
+    },
+    "responseActions": [
+      {
+        "@odata.type": "#microsoft.graph.security.isolateDeviceResponseAction",
+        "identifier": "deviceId",
+        "isolationType": "selective"
+      }
+    ]
+  }
+}

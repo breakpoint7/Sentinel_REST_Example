@@ -1,0 +1,34 @@
+{
+  "displayName": "TEST_RULE_Suspicious_Registry_Modification",
+  "isEnabled": true,
+  "queryCondition": {
+    "queryText": "DeviceRegistryEvents\n| where Timestamp > ago(1h)\n| where RegistryKey contains \"Run\"\n| where isnotempty(RegistryValueData)\n| project Timestamp, DeviceName, RegistryKey, RegistryValueName, RegistryValueData, InitiatingProcessFileName, DeviceId, ReportId"
+  },
+  "schedule": {
+    "period": "1H"
+  },
+  "detectionAction": {
+    "alertTemplate": {
+      "title": "Suspicious Registry Autostart Modification",
+      "description": "A modification was made to Windows autostart registry keys. This is a common \npersistence technique used by malware to maintain access to the system \nacross reboots.",
+      "severity": "medium",
+      "category": "Persistence",
+      "mitreTechniques": [
+        "T1547.001"
+      ],
+      "impactedAssets": [
+        {
+          "@odata.type": "#microsoft.graph.security.impactedDeviceAsset",
+          "identifier": "deviceId"
+        }
+      ]
+    },
+    "responseActions": [
+      {
+        "@odata.type": "#microsoft.graph.security.isolateDeviceResponseAction",
+        "identifier": "deviceId",
+        "isolationType": "selective"
+      }
+    ]
+  }
+}

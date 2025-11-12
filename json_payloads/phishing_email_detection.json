@@ -1,0 +1,26 @@
+{
+  "displayName": "TEST_RULE_Phishing_Email_Detection",
+  "isEnabled": true,
+  "queryCondition": {
+    "queryText": "EmailEvents\n| where Timestamp > ago(1h)\n| where Subject contains \"urgent\"\n| project Timestamp, RecipientEmailAddress, SenderFromAddress, Subject, ReportId"
+  },
+  "schedule": {
+    "period": "1H"
+  },
+  "detectionAction": {
+    "alertTemplate": {
+      "title": "Potential Phishing Email Detected v2",
+      "description": "An email with characteristics commonly associated with phishing attempts \nwas detected. The email contains urgent language and includes attachments \nor URLs that may be malicious.",
+      "severity": "medium",
+      "category": "InitialAccess",
+      "mitreTechniques": [],
+      "impactedAssets": [
+        {
+          "@odata.type": "#microsoft.graph.security.impactedMailboxAsset",
+          "identifier": "recipientEmailAddress"
+        }
+      ]
+    },
+    "responseActions": []
+  }
+}

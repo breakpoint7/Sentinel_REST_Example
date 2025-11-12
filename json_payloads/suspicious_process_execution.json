@@ -1,0 +1,35 @@
+{
+  "displayName": "TEST_RULE_Suspicious_Process_Execution",
+  "isEnabled": true,
+  "queryCondition": {
+    "queryText": "DeviceProcessEvents\n| where Timestamp > ago(1h)\n| where ProcessCommandLine contains \"powershell\" and ProcessCommandLine contains \"-EncodedCommand\"\n| where ProcessCommandLine contains \"bypass\" or ProcessCommandLine contains \"hidden\"\n| project Timestamp, DeviceName, FileName, ProcessCommandLine, InitiatingProcessFileName, DeviceId, ReportId"
+  },
+  "schedule": {
+    "period": "1H"
+  },
+  "detectionAction": {
+    "alertTemplate": {
+      "title": "Suspicious PowerShell Execution Detected",
+      "description": "A suspicious PowerShell command was detected that uses encoded commands with \nexecution policy bypass or hidden window mode. This behavior is commonly \nassociated with malicious activities and should be investigated.",
+      "severity": "high",
+      "category": "Execution",
+      "mitreTechniques": [
+        "T1059.001",
+        "T1027"
+      ],
+      "impactedAssets": [
+        {
+          "@odata.type": "#microsoft.graph.security.impactedDeviceAsset",
+          "identifier": "deviceId"
+        }
+      ]
+    },
+    "responseActions": [
+      {
+        "@odata.type": "#microsoft.graph.security.isolateDeviceResponseAction",
+        "identifier": "deviceId",
+        "isolationType": "selective"
+      }
+    ]
+  }
+}
